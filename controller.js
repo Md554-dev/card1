@@ -6,12 +6,22 @@ const back = document.getElementById('back');
 
 function loadCSV(path) {
   return fetch(path)
-    .then(response => response.text())
+    .then(response => {
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      return response.text();
+    })
     .then(text => {
-      return text.trim().split('\n').map(line => {
-        const [foreign, russian] = line.split(',');
-        return { foreign: foreign.trim(), russian: russian.trim() };
-      });
+      return text
+        .trim()
+        .split('\n')
+        .filter(line => line.trim() !== '')
+        .map(line => {
+          const [foreign, russian] = line.split(';');
+          return {
+            foreign: foreign?.trim() || '',
+            russian: russian?.trim() || ''
+          };
+        });
     });
 }
 
@@ -48,7 +58,7 @@ card.addEventListener('touchend', (e) => {
   startX = null;
 }, false);
 
-// Также можно использовать клавиши ← и →
+// Клавиши ← и →
 document.addEventListener('keydown', (e) => {
   if (e.key === 'ArrowLeft') {
     currentIndex = (currentIndex - 1 + words.length) % words.length;
@@ -60,7 +70,12 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
-loadCSV('words.csv').then(data => {
-  words = data;
-  showWord(currentIndex);
-});
+loadCSV('words.csv')
+  .then(data => {
+    words = data;
+    showWord(currentIndex);
+  })
+  .catch(error => {
+    front.textContent = 'Ошибка загрузки';
+    console.error('Ошибка при загрузке слов:', error);
+  });
