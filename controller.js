@@ -1,9 +1,9 @@
 // controller.js
 let words = [];
 let currentIndex = 0;
-let direction = localStorage.getItem('direction') || 'es-ru';
-let hiddenIndices = JSON.parse(localStorage.getItem('hidden') || '[]');
 let selectedFile = localStorage.getItem('selectedFile') || 'words1.csv';
+let direction = localStorage.getItem('direction_' + selectedFile) || 'es-ru';
+let hiddenIndices = JSON.parse(localStorage.getItem('hidden_' + selectedFile) || '[]');
 
 const card = document.getElementById('card');
 const frontText = document.getElementById('text-front');
@@ -11,11 +11,17 @@ const backText = document.getElementById('text-back');
 const counterFront = document.getElementById('counter-front');
 const counterBack = document.getElementById('counter-back');
 
+const btnEsRu = document.getElementById('btn-es-ru');
+const btnRuEs = document.getElementById('btn-ru-es');
+
 function isHidden(index) {
   return hiddenIndices.includes(index);
 }
 function saveHidden() {
-  localStorage.setItem('hidden', JSON.stringify(hiddenIndices));
+  localStorage.setItem('hidden_' + selectedFile, JSON.stringify(hiddenIndices));
+}
+function saveDirection() {
+  localStorage.setItem('direction_' + selectedFile, direction);
 }
 function getNextVisibleIndex(start) {
   let i = start, attempts = 0;
@@ -32,6 +38,12 @@ function getPrevVisibleIndex(start) {
     attempts++;
   } while (isHidden(i) && attempts < words.length);
   return i;
+}
+function updateButtons() {
+  if (btnEsRu && btnRuEs) {
+    btnEsRu.classList.toggle('active', direction === 'es-ru');
+    btnRuEs.classList.toggle('active', direction === 'ru-es');
+  }
 }
 function loadCSV(path) {
   return fetch(path).then(r => {
@@ -65,6 +77,24 @@ function showWord(index) {
   counterBack.textContent = counterText;
   card.classList.remove('flipped');
 }
+
+// События
+if (btnEsRu && btnRuEs) {
+  btnEsRu.addEventListener('click', () => {
+    direction = 'es-ru';
+    saveDirection();
+    updateButtons();
+    showWord(currentIndex);
+  });
+
+  btnRuEs.addEventListener('click', () => {
+    direction = 'ru-es';
+    saveDirection();
+    updateButtons();
+    showWord(currentIndex);
+  });
+}
+
 document.getElementById('btn-hide').addEventListener('click', () => {
   if (!hiddenIndices.includes(currentIndex)) {
     hiddenIndices.push(currentIndex);
@@ -94,7 +124,10 @@ document.addEventListener('keydown', (e) => {
 card.addEventListener('click', () => {
   card.classList.toggle('flipped');
 });
+
+// Загрузка CSV и запуск
 loadCSV(selectedFile).then(data => {
   words = data;
+  updateButtons();
   showWord(currentIndex);
 });
