@@ -79,3 +79,23 @@ body {
   padding: 8px 12px;
   font-size: 14px;
 }
+.direction-buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.direction-buttons button {
+  padding: 6px 12px;
+  font-size: 14px;
+  border: none;
+  border-radius: 4px;
+  background-color: #ddd;
+  cursor: pointer;
+}
+
+.direction-buttons button.active {
+  background-color: #4caf50;
+  color: white;
+  font-weight: bold;
+}
