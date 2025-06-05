@@ -8,34 +8,33 @@
     body {
       font-family: sans-serif;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
+      justify-content: center;
       height: 100vh;
       margin: 0;
       background: #f0f0f0;
-      flex-direction: column;
-    }
-
-    #language-buttons {
-      position: absolute;
-      top: 20px;
     }
 
     button {
-      padding: 10px 15px;
-      margin: 5px;
+      margin: 0 10px;
+      padding: 10px 20px;
       font-size: 16px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
+      border: none;
+      border-radius: 5px;
+      background-color: #ddd;
       cursor: pointer;
-      background: #ffffff;
-      transition: background 0.3s;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #bbb;
     }
 
     button.active {
-      background: #4caf50;
+      background-color: #4caf50;
       color: white;
-      border-color: #388e3c;
+      font-weight: bold;
     }
 
     .card {
@@ -84,22 +83,26 @@
       transform: rotateY(180deg);
       background-color: #e0f7fa;
     }
+
+    .controls {
+      margin-bottom: 20px;
+    }
   </style>
 </head>
 <body>
 
-<div id="language-buttons">
-  <button id="btn-foreign-first" onclick="setDirection('foreign-first')">español → русский</button>
-  <button id="btn-russian-first" onclick="setDirection('russian-first')">русский → español</button>
-</div>
-
-<div class="card" id="card">
-  <div class="inner">
-    <div class="front" id="front">Выберите язык</div>
-    <div class="back" id="back"></div>
+  <div class="controls">
+    <button id="btn-es-ru">español → русский</button>
+    <button id="btn-ru-es">русский → español</button>
   </div>
-</div>
 
-<script src="controller.js"></script>
+  <div class="card" id="card">
+    <div class="inner">
+      <div class="front" id="front">Загрузка...</div>
+      <div class="back" id="back"></div>
+    </div>
+  </div>
+
+  <script src="controller.js"></script>
 </body>
 </html>
