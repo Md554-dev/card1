@@ -5,6 +5,8 @@ let direction = localStorage.getItem('direction') || 'es-ru';
 const card = document.getElementById('card');
 const front = document.getElementById('front');
 const back = document.getElementById('back');
+const counterFront = document.getElementById('counter-front');
+const counterBack = document.getElementById('counter-back');
 const btnEsRu = document.getElementById('btn-es-ru');
 const btnRuEs = document.getElementById('btn-ru-es');
 
@@ -32,13 +34,17 @@ function loadCSV(path) {
 function showWord(index) {
   if (index < 0 || index >= words.length) return;
   const word = words[index];
+
   if (direction === 'es-ru') {
-    front.textContent = word.foreign;
+    front.firstChild.textContent = word.foreign;
     back.textContent = word.russian;
   } else {
-    front.textContent = word.russian;
+    front.firstChild.textContent = word.russian;
     back.textContent = word.foreign;
   }
+
+  counterFront.textContent = `${index + 1} из ${words.length}`;
+  counterBack.textContent = `${index + 1} из ${words.length}`;
   card.classList.remove('flipped');
 }
 
@@ -90,7 +96,7 @@ card.addEventListener('touchend', (e) => {
   startX = null;
 }, false);
 
-// Клавиши ← и →
+// Клавиши ←, →, ↑, ↓
 document.addEventListener('keydown', (e) => {
   if (e.key === 'ArrowLeft') {
     currentIndex = (currentIndex - 1 + words.length) % words.length;
@@ -99,6 +105,9 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'ArrowRight') {
     currentIndex = (currentIndex + 1) % words.length;
     showWord(currentIndex);
+  }
+  if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+    card.classList.toggle('flipped');
   }
 });
 
@@ -109,6 +118,6 @@ loadCSV('words.csv')
     showWord(currentIndex);
   })
   .catch(error => {
-    front.textContent = 'Ошибка загрузки';
+    front.firstChild.textContent = 'Ошибка загрузки';
     console.error('Ошибка при загрузке слов:', error);
   });
