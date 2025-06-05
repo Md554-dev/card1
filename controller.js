@@ -20,6 +20,26 @@ function saveHidden() {
   localStorage.setItem('hidden', JSON.stringify(hiddenIndices));
 }
 
+function getNextVisibleIndex(start) {
+  let i = start;
+  let attempts = 0;
+  do {
+    i = (i + 1) % words.length;
+    attempts++;
+  } while (isHidden(i) && attempts < words.length);
+  return i;
+}
+
+function getPrevVisibleIndex(start) {
+  let i = start;
+  let attempts = 0;
+  do {
+    i = (i - 1 + words.length) % words.length;
+    attempts++;
+  } while (isHidden(i) && attempts < words.length);
+  return i;
+}
+
 
 function loadCSV(path) {
   return fetch(path)
@@ -113,10 +133,11 @@ card.addEventListener('touchend', (e) => {
   const endX = e.changedTouches[0].clientX;
   if (startX !== null && Math.abs(endX - startX) > 50) {
     if (endX < startX) {
-      currentIndex = (currentIndex - 1 + words.length) % words.length;
-    } else {
-      currentIndex = (currentIndex + 1) % words.length;
-    }
+  currentIndex = getPrevVisibleIndex(currentIndex);
+} else {
+  currentIndex = getNextVisibleIndex(currentIndex);
+}
+
     showWord(currentIndex);
   }
   startX = null;
@@ -134,17 +155,18 @@ document.getElementById('btn-hide').addEventListener('click', () => {
 
 document.addEventListener('keydown', (e) => {
   if (e.key === 'ArrowLeft') {
-    currentIndex = (currentIndex - 1 + words.length) % words.length;
+    currentIndex = getPrevVisibleIndex(currentIndex);
     showWord(currentIndex);
   }
   if (e.key === 'ArrowRight') {
-    currentIndex = (currentIndex + 1) % words.length;
+    currentIndex = getNextVisibleIndex(currentIndex);
     showWord(currentIndex);
   }
   if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
     card.classList.toggle('flipped');
   }
 });
+
 
 document.getElementById('btn-reset').addEventListener('click', () => {
   hiddenIndices = [];
