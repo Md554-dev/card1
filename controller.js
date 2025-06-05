@@ -30,21 +30,27 @@ function loadCSV(path) {
         });
     });
 }
-
 function showWord(index) {
   if (index < 0 || index >= words.length) return;
   const word = words[index];
 
+  const frontText = document.getElementById('text-front');
+  const backText = document.getElementById('text-back');
+  const counterFront = document.getElementById('counter-front');
+  const counterBack = document.getElementById('counter-back');
+
   if (direction === 'es-ru') {
-    front.firstChild.textContent = word.foreign;
-    back.textContent = word.russian;
+    frontText.textContent = word.foreign;
+    backText.textContent = word.russian;
   } else {
-    front.firstChild.textContent = word.russian;
-    back.textContent = word.foreign;
+    frontText.textContent = word.russian;
+    backText.textContent = word.foreign;
   }
 
-  counterFront.textContent = `${index + 1} из ${words.length}`;
-  counterBack.textContent = `${index + 1} из ${words.length}`;
+  const counterText = `${index + 1} из ${words.length}`;
+  counterFront.textContent = counterText;
+  counterBack.textContent = counterText;
+
   card.classList.remove('flipped');
 }
 
