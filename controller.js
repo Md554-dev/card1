@@ -10,6 +10,17 @@ const counterBack = document.getElementById('counter-back');
 const btnEsRu = document.getElementById('btn-es-ru');
 const btnRuEs = document.getElementById('btn-ru-es');
 
+let hiddenIndices = JSON.parse(localStorage.getItem('hidden') || '[]');
+
+function isHidden(index) {
+  return hiddenIndices.includes(index);
+}
+
+function saveHidden() {
+  localStorage.setItem('hidden', JSON.stringify(hiddenIndices));
+}
+
+
 function loadCSV(path) {
   return fetch(path)
     .then(response => {
@@ -30,10 +41,19 @@ function loadCSV(path) {
         });
     });
 }
-function showWord(index) {
-  if (index < 0 || index >= words.length) return;
-  const word = words[index];
 
+function showWord(index) {
+  if (words.length === 0) return;
+
+  // Найдём следующий видимый индекс
+  let attempts = 0;
+  while (isHidden(index) && attempts < words.length) {
+    index = (index + 1) % words.length;
+    attempts++;
+  }
+  currentIndex = index;
+
+  const word = words[currentIndex];
   const frontText = document.getElementById('text-front');
   const backText = document.getElementById('text-back');
   const counterFront = document.getElementById('counter-front');
@@ -47,7 +67,7 @@ function showWord(index) {
     backText.textContent = word.foreign;
   }
 
-  const counterText = `${index + 1} из ${words.length}`;
+  const counterText = `${currentIndex + 1} из ${words.length}`;
   counterFront.textContent = counterText;
   counterBack.textContent = counterText;
 
@@ -103,6 +123,15 @@ card.addEventListener('touchend', (e) => {
 }, false);
 
 // Клавиши ←, →, ↑, ↓
+document.getElementById('btn-hide').addEventListener('click', () => {
+  if (!hiddenIndices.includes(currentIndex)) {
+    hiddenIndices.push(currentIndex);
+    saveHidden();
+  }
+  currentIndex = (currentIndex + 1) % words.length;
+  showWord(currentIndex);
+});
+
 document.addEventListener('keydown', (e) => {
   if (e.key === 'ArrowLeft') {
     currentIndex = (currentIndex - 1 + words.length) % words.length;
@@ -115,6 +144,12 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
     card.classList.toggle('flipped');
   }
+});
+
+document.getElementById('btn-reset').addEventListener('click', () => {
+  hiddenIndices = [];
+  saveHidden();
+  showWord(currentIndex);
 });
 
 loadCSV('words.csv')
