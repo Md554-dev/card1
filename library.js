@@ -5,7 +5,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const fileSelect = document.getElementById('file-select');
   const currentFileLabel = document.getElementById('current-file');
 
-  const availableFiles = ['words1.csv', 'travel.csv', 'verbs.csv'];
+  const availableFiles = [
+  'casador_de_pitones_1.csv',
+  'casador_de_pitones_2.csv',
+  'casador_de_pitones_3.csv',
+  'casador_de_pitones_4.csv'
+];
+
   const selectedFile = localStorage.getItem('selectedFile') || availableFiles[0];
 
   availableFiles.forEach(file => {
