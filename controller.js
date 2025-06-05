@@ -1,44 +1,60 @@
 let words = [];
 let currentIndex = 0;
+let direction = localStorage.getItem('cardDirection') || 'foreign-first';
+
 const card = document.getElementById('card');
 const front = document.getElementById('front');
 const back = document.getElementById('back');
 
 function loadCSV(path) {
   return fetch(path)
-    .then(response => {
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      return response.text();
-    })
+    .then(response => response.text())
     .then(text => {
-      return text
-        .trim()
-        .split('\n')
-        .filter(line => line.trim() !== '')
-        .map(line => {
-          const [foreign, russian] = line.split(';');
-          return {
-            foreign: foreign?.trim() || '',
-            russian: russian?.trim() || ''
-          };
-        });
+      return text.trim().split('\n').map(line => {
+        const [foreign, russian] = line.split(',');
+        return { foreign: foreign.trim(), russian: russian.trim() };
+      });
     });
 }
 
 function showWord(index) {
   if (index < 0 || index >= words.length) return;
-  front.textContent = words[index].foreign;
-  back.textContent = words[index].russian;
+
+  if (direction === 'foreign-first') {
+    front.textContent = words[index].foreign;
+    back.textContent = words[index].russian;
+  } else {
+    front.textContent = words[index].russian;
+    back.textContent = words[index].foreign;
+  }
+
   card.classList.remove('flipped');
+}
+
+function setDirection(newDirection) {
+  direction = newDirection;
+  localStorage.setItem('cardDirection', direction); // 💾 сохраняем выбор
+  updateActiveButton();
+  showWord(currentIndex);
+}
+
+function updateActiveButton() {
+  document.getElementById('btn-foreign-first').classList.remove('active');
+  document.getElementById('btn-russian-first').classList.remove('active');
+
+  if (direction === 'foreign-first') {
+    document.getElementById('btn-foreign-first').classList.add('active');
+  } else {
+    document.getElementById('btn-russian-first').classList.add('active');
+  }
 }
 
 card.addEventListener('click', () => {
   card.classList.toggle('flipped');
 });
 
-// Обработка свайпов
+// Swipe обработка
 let startX = null;
-
 card.addEventListener('touchstart', (e) => {
   startX = e.changedTouches[0].clientX;
 }, false);
@@ -47,10 +63,8 @@ card.addEventListener('touchend', (e) => {
   const endX = e.changedTouches[0].clientX;
   if (startX !== null && Math.abs(endX - startX) > 50) {
     if (endX < startX) {
-      // Свайп влево — предыдущая карточка
       currentIndex = (currentIndex - 1 + words.length) % words.length;
     } else {
-      // Свайп вправо — следующая карточка
       currentIndex = (currentIndex + 1) % words.length;
     }
     showWord(currentIndex);
@@ -70,12 +84,8 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
-loadCSV('words.csv')
-  .then(data => {
-    words = data;
-    showWord(currentIndex);
-  })
-  .catch(error => {
-    front.textContent = 'Ошибка загрузки';
-    console.error('Ошибка при загрузке слов:', error);
-  });
+loadCSV('words.csv').then(data => {
+  words = data;
+  updateActiveButton();
+  showWord(currentIndex);
+});

@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Карточки слов</title>
-  <link rel="stylesheet" href="styles.css">
   <style>
     body {
       font-family: sans-serif;
@@ -14,7 +13,31 @@
       height: 100vh;
       margin: 0;
       background: #f0f0f0;
+      flex-direction: column;
     }
+
+    #language-buttons {
+      position: absolute;
+      top: 20px;
+    }
+
+    button {
+      padding: 10px 15px;
+      margin: 5px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      cursor: pointer;
+      background: #ffffff;
+      transition: background 0.3s;
+    }
+
+    button.active {
+      background: #4caf50;
+      color: white;
+      border-color: #388e3c;
+    }
+
     .card {
       width: 300px;
       height: 200px;
@@ -31,6 +54,7 @@
       position: relative;
       perspective: 1000px;
     }
+
     .inner {
       width: 100%;
       height: 100%;
@@ -38,9 +62,11 @@
       transition: transform 0.6s;
       transform-style: preserve-3d;
     }
+
     .flipped .inner {
       transform: rotateY(180deg);
     }
+
     .front, .back {
       backface-visibility: hidden;
       position: absolute;
@@ -53,6 +79,7 @@
       padding: 20px;
       box-sizing: border-box;
     }
+
     .back {
       transform: rotateY(180deg);
       background-color: #e0f7fa;
@@ -61,9 +88,14 @@
 </head>
 <body>
 
+<div id="language-buttons">
+  <button id="btn-foreign-first" onclick="setDirection('foreign-first')">español → русский</button>
+  <button id="btn-russian-first" onclick="setDirection('russian-first')">русский → español</button>
+</div>
+
 <div class="card" id="card">
   <div class="inner">
-    <div class="front" id="front">Загрузка...</div>
+    <div class="front" id="front">Выберите язык</div>
     <div class="back" id="back"></div>
   </div>
 </div>
