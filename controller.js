@@ -131,3 +131,22 @@ loadCSV(selectedFile).then(data => {
   updateButtons();
   showWord(currentIndex);
 });
+// Swipe support for mobile
+let startX = null;
+
+card.addEventListener('touchstart', (e) => {
+  startX = e.changedTouches[0].clientX;
+}, false);
+
+card.addEventListener('touchend', (e) => {
+  const endX = e.changedTouches[0].clientX;
+  if (startX !== null && Math.abs(endX - startX) > 50) {
+    if (endX < startX) {
+      currentIndex = getNextVisibleIndex(currentIndex); // swipe left
+    } else {
+      currentIndex = getPrevVisibleIndex(currentIndex); // swipe right
+    }
+    showWord(currentIndex);
+  }
+  startX = null;
+}, false);
